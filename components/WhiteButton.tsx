@@ -1,21 +1,29 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
-interface WhiteButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface WhiteButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
   variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'sm' | 'md';
   fullWidth?: boolean;
   icon?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const WhiteButton: React.FC<WhiteButtonProps> = ({ 
   children, 
   variant = 'primary', 
+  size = 'md',
   fullWidth = false, 
   icon,
   className = '',
   ...props 
 }) => {
-  const baseStyles = "h-12 px-6 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all duration-200 border focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-200";
+  const sizeStyles = {
+    sm: "h-8 px-3 text-xs",
+    md: "h-12 px-6 text-sm",
+  };
+
+  const baseStyles = "rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-200 border focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-200";
   
   const variants = {
     primary: "bg-primary text-white border-transparent hover:bg-black",
@@ -27,7 +35,7 @@ const WhiteButton: React.FC<WhiteButtonProps> = ({
     <motion.button
       whileTap={{ scale: 0.96 }}
       whileHover={{ scale: 1.01 }}
-      className={`${baseStyles} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      className={`${baseStyles} ${sizeStyles[size]} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
       {...props}
     >
       {icon && <span className="w-4 h-4">{icon}</span>}

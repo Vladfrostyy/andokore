@@ -17,6 +17,35 @@ const BlockEditor: React.FC<{ block: PageBlock; onClose: () => void }> = ({ bloc
       updateBlock(block.id, { animation: e.target.value as AnimationType });
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateBlock(block.id, { url: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+       const files = Array.from(e.target.files);
+       const promises = files.map(file => {
+           return new Promise<string>((resolve) => {
+               const reader = new FileReader();
+               reader.onloadend = () => resolve(reader.result as string);
+               reader.readAsDataURL(file);
+           });
+       });
+       Promise.all(promises).then(images => {
+           // @ts-ignore
+           const currentImages = block.images || [];
+           updateBlock(block.id, { images: [...currentImages, ...images] });
+       });
+    }
+  };
+
   return (
     <div className="space-y-3 py-2 animate-fade-in">
       {/* --- Common Animation Field --- */}
@@ -121,11 +150,18 @@ const BlockEditor: React.FC<{ block: PageBlock; onClose: () => void }> = ({ bloc
 
       {block.type === 'image' && (
           <>
-            <InputField 
-                value={block.url} 
-                onChange={(e) => updateBlock(block.id, { url: e.target.value })}
-                placeholder="Image URL"
-            />
+            <div className="flex gap-2 items-end">
+                <InputField 
+                    value={block.url} 
+                    onChange={(e) => updateBlock(block.id, { url: e.target.value })}
+                    placeholder="Image URL"
+                    className="flex-1"
+                />
+                <label className="mb-1 cursor-pointer bg-accent hover:bg-gray-200 text-secondary p-3 rounded-xl transition-colors">
+                    <Icons.Upload size={20} />
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                </label>
+            </div>
             <InputField 
                 value={block.caption || ''} 
                 onChange={(e) => updateBlock(block.id, { caption: e.target.value })}
@@ -136,12 +172,20 @@ const BlockEditor: React.FC<{ block: PageBlock; onClose: () => void }> = ({ bloc
 
       {block.type === 'gallery' && (
           <div className="space-y-2">
-              <label className="text-xs font-medium text-secondary">Image URLs (comma separated for demo)</label>
+              <div className="flex justify-between items-center">
+                  <label className="text-xs font-medium text-secondary">Images</label>
+                  <label className="cursor-pointer text-xs flex items-center gap-1 text-primary font-medium hover:text-blue-600 transition-colors">
+                      <Icons.Upload size={14} />
+                      Upload
+                      <input type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryUpload} />
+                  </label>
+              </div>
               <textarea
                   className="w-full p-2 bg-accent rounded-xl text-sm border-none outline-none"
                   value={block.images.join(', ')}
                   onChange={(e) => updateBlock(block.id, { images: e.target.value.split(',').map(s => s.trim()) })}
                   rows={3}
+                  placeholder="Paste URLs separated by comma or upload images"
               />
           </div>
       )}

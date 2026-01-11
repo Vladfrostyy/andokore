@@ -13,6 +13,17 @@ const ThemeSelector: React.FC = () => {
     { id: 'glass', name: 'Glass' },
   ];
 
+  const handleBackgroundUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTheme({ backgroundValue: reader.result as string, backgroundType: 'image' });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="space-y-8 h-full overflow-y-auto pb-20 no-scrollbar pr-2">
       <section>
@@ -60,15 +71,22 @@ const ThemeSelector: React.FC = () => {
             ))}
         </div>
 
-        <InputField 
-            value={theme.backgroundValue}
-            onChange={(e) => setTheme({ backgroundValue: e.target.value })}
-            placeholder={
-                theme.backgroundType === 'color' ? 'Hex Color (#FFFFFF)' :
-                theme.backgroundType === 'gradient' ? 'linear-gradient(...)' :
-                'Media URL (https://...)'
-            }
-        />
+        <div className="flex gap-2 items-end">
+            <InputField 
+                value={theme.backgroundValue}
+                onChange={(e) => setTheme({ backgroundValue: e.target.value })}
+                placeholder={
+                    theme.backgroundType === 'color' ? 'Hex Color (#FFFFFF)' :
+                    theme.backgroundType === 'gradient' ? 'linear-gradient(...)' :
+                    'Media URL (https://...)'
+                }
+                className="flex-1"
+            />
+            <label className="mb-1 cursor-pointer bg-accent hover:bg-gray-200 text-secondary p-3 rounded-xl transition-colors">
+                <Icons.Upload size={20} />
+                <input type="file" accept="image/*" className="hidden" onChange={handleBackgroundUpload} />
+            </label>
+        </div>
 
         <div className="space-y-4 pt-2">
             <div>
@@ -153,8 +171,8 @@ const ThemeSelector: React.FC = () => {
       </section>
 
       {/* Typography & Texture */}
-      <section>
-        <h2 className="text-lg font-semibold text-primary mb-4">Typography & Texture</h2>
+      <section className="bg-white p-5 rounded-2xl border border-border space-y-4">
+        <h2 className="text-lg font-semibold text-primary mb-2">Typography & Texture</h2>
         <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -182,6 +200,48 @@ const ThemeSelector: React.FC = () => {
                     </select>
                 </div>
             </div>
+
+            {/* Text Colors */}
+            <div>
+                <label className="text-xs text-secondary mb-2 block">Text Colors</label>
+                <div className="flex gap-4">
+                    <div className="flex-1">
+                        <span className="text-[10px] uppercase text-gray-400 font-bold tracking-wider mb-1 block">Title</span>
+                        <div className="flex items-center gap-2">
+                            <input 
+                                type="color" 
+                                value={theme.colorTitle || '#1A1A1A'}
+                                onChange={(e) => setTheme({ colorTitle: e.target.value })}
+                                className="w-8 h-8 rounded-lg border border-border p-0.5 cursor-pointer"
+                            />
+                            <input 
+                                type="text" 
+                                value={theme.colorTitle || '#1A1A1A'}
+                                onChange={(e) => setTheme({ colorTitle: e.target.value })}
+                                className="flex-1 min-w-0 p-2 text-xs bg-white border border-border rounded-lg uppercase"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        <span className="text-[10px] uppercase text-gray-400 font-bold tracking-wider mb-1 block">Bio</span>
+                        <div className="flex items-center gap-2">
+                            <input 
+                                type="color" 
+                                value={theme.colorBio || '#666666'}
+                                onChange={(e) => setTheme({ colorBio: e.target.value })}
+                                className="w-8 h-8 rounded-lg border border-border p-0.5 cursor-pointer"
+                            />
+                            <input 
+                                type="text" 
+                                value={theme.colorBio || '#666666'}
+                                onChange={(e) => setTheme({ colorBio: e.target.value })}
+                                className="flex-1 min-w-0 p-2 text-xs bg-white border border-border rounded-lg uppercase"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className="flex gap-3 pt-2">
                 {(['none', 'noise', 'dots'] as const).map(t => (
                     <button

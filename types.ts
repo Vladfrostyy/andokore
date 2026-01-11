@@ -81,6 +81,8 @@ export interface ThemeSettings {
   buttonTransparency: number; // 0 - 1 (1 is opaque)
   fontHeader: string;
   fontBody: string;
+  colorTitle: string;
+  colorBio: string;
   // Background Engine
   backgroundType: 'color' | 'image' | 'video' | 'gradient';
   backgroundValue: string; // Hex color, Image URL, Video URL, or Gradient CSS
@@ -110,6 +112,7 @@ export interface AppState {
   reorderBlocks: (newBlocks: PageBlock[]) => void;
   
   setTheme: (theme: Partial<ThemeSettings>) => void;
+  importData: (data: Partial<AppState>) => void;
 }
 
 export interface ChatMessage {

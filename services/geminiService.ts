@@ -1,8 +1,7 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 import { ChatMessage } from "../types";
 
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // Helper to create a chat session
 export const createChatSession = (): Chat => {

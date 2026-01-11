@@ -25,6 +25,8 @@ export const useAppStore = create<AppState>()(
         buttonTransparency: 1,
         fontHeader: 'sans',
         fontBody: 'sans',
+        colorTitle: '#1A1A1A',
+        colorBio: '#666666',
         backgroundType: 'color',
         backgroundValue: '#FFFFFF',
         backgroundBlur: 0,
@@ -91,6 +93,14 @@ export const useAppStore = create<AppState>()(
       reorderBlocks: (newBlocks) => set({ blocks: newBlocks }),
 
       setTheme: (data) => set((state) => ({ theme: { ...state.theme, ...data } })),
+
+      importData: (data) => set((state) => ({
+        ...state,
+        profile: data.profile || state.profile,
+        blocks: data.blocks || state.blocks,
+        theme: data.theme || state.theme,
+        seo: data.seo || state.seo,
+      })),
     }),
     {
       name: 'andokore-storage',

@@ -5,9 +5,10 @@ import { ThemeSettings } from '../types';
 
 interface HomeScreenProps {
   onNavigate: (tab: 'edit' | 'themes' | 'stats' | 'seo') => void;
+  onShare: () => void;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onShare }) => {
   const { profile, blocks, setTheme } = useAppStore();
   const hasLinks = blocks.length > 0;
 
@@ -37,6 +38,27 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
             </div>
             <span className="font-semibold text-lg">Build Your TapBio</span>
         </button>
+      </section>
+
+      {/* Connect Instagram CTA */}
+      <section>
+         <button 
+            onClick={onShare}
+            className="w-full p-4 rounded-2xl bg-gradient-to-r from-pink-50 to-purple-50 border border-purple-100 flex items-center justify-between group hover:shadow-sm transition-all"
+         >
+             <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-purple-600 shadow-sm">
+                     <Icons.Instagram size={20} />
+                 </div>
+                 <div className="text-left">
+                     <h3 className="font-semibold text-primary text-sm">Connect to Instagram</h3>
+                     <p className="text-xs text-secondary">Get more traffic from your bio.</p>
+                 </div>
+             </div>
+             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 group-hover:text-purple-600 transition-colors">
+                 <Icons.ArrowRight size={16} />
+             </div>
+         </button>
       </section>
 
       {/* Analytics Widget (Conditional) */}
@@ -114,21 +136,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
                 </button>
             ))}
         </div>
-      </section>
-
-      {/* Trust Badges */}
-      <section className="grid grid-cols-3 gap-4 pt-4 border-t border-border/50">
-         {[
-             { icon: 'Zap', label: 'Lightning Fast' },
-             { icon: 'Search', label: 'SEO Ready' },
-             { icon: 'Shield', label: 'Privacy First' }
-         ].map(badge => (
-             <div key={badge.label} className="flex flex-col items-center gap-2 text-center opacity-60">
-                 {/* @ts-ignore */}
-                 {React.createElement(Icons[badge.icon], { size: 18, className: "text-primary" })}
-                 <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">{badge.label}</span>
-             </div>
-         ))}
       </section>
     </div>
   );

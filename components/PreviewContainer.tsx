@@ -4,7 +4,11 @@ import * as Icons from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { PageBlock } from '../types';
 
-const PreviewContainer: React.FC = () => {
+interface PreviewContainerProps {
+  isMobileView?: boolean;
+}
+
+const PreviewContainer: React.FC<PreviewContainerProps> = ({ isMobileView = false }) => {
   const { profile, blocks, theme } = useAppStore();
 
   const getFontClass = (type: 'header' | 'body') => {
@@ -249,29 +253,51 @@ END:VCARD`;
       }
   };
 
+  // If in "Mobile View" (App Mode), we remove the phone frame and notch
+  const containerClasses = isMobileView 
+    ? "w-full h-full bg-white relative overflow-hidden" 
+    : "relative w-[320px] h-[640px] bg-white rounded-[40px] shadow-2xl border-[8px] border-gray-900 overflow-hidden shrink-0 z-0";
+
+  const contentClasses = isMobileView
+    ? "relative w-full h-full overflow-y-auto no-scrollbar pt-12 pb-8 px-6 flex flex-col items-center z-10"
+    : "relative w-full h-full bg-white overflow-hidden rounded-[32px] overflow-y-auto no-scrollbar pt-12 pb-8 px-6 flex flex-col items-center z-10";
+
   return (
-    <div className="flex justify-center items-center h-full p-4 md:p-8 overflow-hidden bg-gray-100">
-      {/* Phone Mockup Frame */}
-      <div className="relative w-[320px] h-[640px] bg-white rounded-[40px] shadow-2xl border-[8px] border-gray-900 overflow-hidden shrink-0 z-0">
-        {/* Notch */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-900 rounded-b-2xl z-20"></div>
+    <div className={`flex justify-center items-center h-full ${!isMobileView ? 'p-4 md:p-8 bg-gray-100' : ''} overflow-hidden`}>
+      {/* Phone Mockup Frame or Full Screen */}
+      <div className={containerClasses}>
+        
+        {/* Notch - Only show if NOT in mobile view */}
+        {!isMobileView && (
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-900 rounded-b-2xl z-20"></div>
+        )}
         
         {/* Screen Content Wrapper */}
-        <div className="relative w-full h-full bg-white overflow-hidden rounded-[32px]">
+        <div className={!isMobileView ? "relative w-full h-full bg-white overflow-hidden rounded-[32px]" : "w-full h-full"}>
             
             {/* Background Layer */}
             {renderBackground()}
 
             {/* Scrollable Content */}
-            <div className={`relative w-full h-full overflow-y-auto no-scrollbar pt-12 pb-8 px-6 flex flex-col items-center z-10`}>
+            <div className={isMobileView ? "relative w-full h-full overflow-y-auto no-scrollbar pt-8 pb-8 px-6 flex flex-col items-center z-10" : "relative w-full h-full overflow-y-auto no-scrollbar pt-12 pb-8 px-6 flex flex-col items-center z-10"}>
             
                 {/* Profile Section */}
                 <div className="flex flex-col items-center mb-8 w-full text-center">
                     <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-white/50 shadow-sm">
                     <img src={profile.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-full h-full object-cover" />
                     </div>
-                    <h1 className={`text-xl font-bold mb-1 ${getFontClass('header')} mix-blend-hard-light`}>{profile.displayName || 'Display Name'}</h1>
-                    <p className={`text-sm opacity-80 max-w-[240px] ${getFontClass('body')} mix-blend-hard-light`}>{profile.bio || 'Your short bio goes here.'}</p>
+                    <h1 
+                        className={`text-xl font-bold mb-1 ${getFontClass('header')}`}
+                        style={{ color: theme.colorTitle || '#1A1A1A' }}
+                    >
+                        {profile.displayName || 'Display Name'}
+                    </h1>
+                    <p 
+                        className={`text-sm opacity-80 max-w-[240px] ${getFontClass('body')}`}
+                        style={{ color: theme.colorBio || '#666666' }}
+                    >
+                        {profile.bio || 'Your short bio goes here.'}
+                    </p>
                 </div>
 
                 {/* Blocks Section */}
